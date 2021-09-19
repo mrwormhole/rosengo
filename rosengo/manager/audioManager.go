@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MrWormHole/rosengo/rosengo/assets"
 	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 	"io"
@@ -56,7 +57,7 @@ func (m *audioManager) LoadAll() error {
 	for i := range sounds {
 		name := sounds[i].Name()
 		extension := filepath.Ext(name)
-		if extension != ".ogg" && extension != ".wav" {
+		if extension != ".ogg" && extension != ".wav" && extension != ".mp3" {
 			continue
 		}
 
@@ -73,11 +74,17 @@ func (m *audioManager) LoadAll() error {
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode ogg: %v", err)
 			}
-			s = audio.NewInfiniteLoop(stream, stream.Length()) // NOTE: why can't we just do s = stream?
+			s = stream
 		case ".wav":
 			stream, err := wav.DecodeWithSampleRate(sampleRate, s)
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode wav: %v", err)
+			}
+			s = stream
+		case ".mp3":
+			stream, err := mp3.DecodeWithSampleRate(sampleRate, s)
+			if err != nil {
+				return fmt.Errorf("audioManager.LoadAll: failed to decode mp3: %v", err)
 			}
 			s = stream
 		}
