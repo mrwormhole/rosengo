@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/MrWormHole/rosengo/rosengo/assets"
@@ -51,7 +52,7 @@ func NewAudioManager(directoryName string, sampleRate int) (AudioManager, error)
 func (m *audioManager) LoadAll() error {
 	sounds, err := assets.Bundle.ReadDir(m.directoryName)
 	if err != nil {
-		return fmt.Errorf("audioManager.LoadAll: failed to read sounds bundle: %v", err)
+		return fmt.Errorf("audioManager.LoadAll: failed to read sounds directory: %v", err)
 	}
 
 	for i := range sounds {
@@ -61,35 +62,34 @@ func (m *audioManager) LoadAll() error {
 			continue
 		}
 
-		file, err := assets.Bundle.Open(path.Join(m.directoryName, name))
+		rawFile, err := assets.Bundle.ReadFile(path.Join(m.directoryName, name))
 		if err != nil {
-			return fmt.Errorf("audioManager.LoadAll: failed to open sounds bundle: %v", err)
+			return fmt.Errorf("audioManager.LoadAll: failed to read sound file: %v", err)
 		}
-		defer file.Close() // WARNING: Possible resource leak, defer is called in the for loop
 
-		var s io.ReadSeeker
+		var src io.ReadSeeker
 		switch extension {
 		case ".ogg":
-			stream, err := vorbis.DecodeWithSampleRate(sampleRate, s)
+			stream, err := vorbis.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode ogg: %v", err)
 			}
-			s = stream
+			src = stream
 		case ".wav":
-			stream, err := wav.DecodeWithSampleRate(sampleRate, s)
+			stream, err := wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode wav: %v", err)
 			}
-			s = stream
+			src = stream
 		case ".mp3":
-			stream, err := mp3.DecodeWithSampleRate(sampleRate, s)
+			stream, err := mp3.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode mp3: %v", err)
 			}
-			s = stream
+			src = stream
 		}
 
-		audioPlayer, err := audio.NewPlayer(audio.NewContext(sampleRate), s)
+		audioPlayer, err := audio.NewPlayer(audio.NewContext(sampleRate), src)
 		if err != nil {
 			return fmt.Errorf("audioManager.LoadAll: failed to create a new audio player: %v", err)
 		}
