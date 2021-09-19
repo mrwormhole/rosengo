@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
+	"path"
+	"path/filepath"
+	"strings"
+
 	"github.com/MrWormHole/rosengo/rosengo/assets"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
-	"io"
-	"path"
-	"path/filepath"
-	"strings"
 )
 
 const sampleRate = 48000
