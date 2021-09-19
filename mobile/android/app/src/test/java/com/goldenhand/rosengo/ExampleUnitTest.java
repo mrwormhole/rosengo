@@ -1,4 +1,4 @@
-package com.hajimehoshi.goinovation;
+package com.goldehand.rosengo;
 
 import org.junit.Test;
 

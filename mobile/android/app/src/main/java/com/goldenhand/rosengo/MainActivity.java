@@ -1,4 +1,4 @@
-package com.hajimehoshi.goinovation;
+package com.goldenhand.rosengo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import go.Seq;
 
-import com.hajimehoshi.goinovation.mobile.EbitenView;
+import com.goldenhand.rosengo.mobile.EbitenView;
 
 public class MainActivity extends AppCompatActivity {
 

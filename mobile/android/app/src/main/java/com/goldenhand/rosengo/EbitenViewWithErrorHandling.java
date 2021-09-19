@@ -1,9 +1,9 @@
-package com.hajimehoshi.goinovation;
+package com.goldenhand.rosengo;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.hajimehoshi.goinovation.mobile.EbitenView;
+import com.goldenhand.rosengo.mobile.EbitenView;
 
 class EbitenViewWithErrorHandling extends EbitenView {
     public EbitenViewWithErrorHandling(Context context) {
