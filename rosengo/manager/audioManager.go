@@ -16,11 +16,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
 
-const sampleRate = 48000
-
 type AudioManager interface {
-	LoadAll() error
-	CloseAll() error
+	Load(dir string) error
+	Close() error
 	IsPlaying(audio string) bool
 	SetVolume(audio string, volume float64) error
 	GetVolume(audio string) float64
@@ -30,28 +28,27 @@ type AudioManager interface {
 }
 
 type audioManager struct {
-	audioPlayers  map[string]*audio.Player
-	directoryName string
-	sampleRate    int
-	isMuted       bool
+	audioPlayers map[string]*audio.Player
+	sampleRate   int
+	isMuted      bool
 }
 
-func NewAudioManager(directoryName string, sampleRate int) (AudioManager, error) {
-	if strings.TrimSpace(directoryName) == "" {
-		return nil, errors.New("manager.NewAudioManager: directory name can not be blank")
-	}
-
+func NewAudioManager(sampleRate int) (AudioManager, error) {
 	players := make(map[string]*audio.Player)
+	sampleRate = 48000 // TODO change this in the future
 	return &audioManager{
-		audioPlayers:  players,
-		directoryName: directoryName,
-		sampleRate:    sampleRate,
-		isMuted:       false,
+		audioPlayers: players,
+		sampleRate:   sampleRate,
+		isMuted:      false,
 	}, nil
 }
 
-func (m *audioManager) LoadAll() error {
-	sounds, err := assets.Bundle.ReadDir(m.directoryName)
+func (m *audioManager) Load(dir string) error {
+	if strings.TrimSpace(dir) == "" {
+		return errors.New("audioManager.Load: directory name can not be blank")
+	}
+
+	sounds, err := assets.Bundle.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("audioManager.LoadAll: failed to read sounds directory: %v", err)
 	}
@@ -63,7 +60,7 @@ func (m *audioManager) LoadAll() error {
 			continue
 		}
 
-		rawFile, err := assets.Bundle.ReadFile(path.Join(m.directoryName, name))
+		rawFile, err := assets.Bundle.ReadFile(path.Join(dir, name))
 		if err != nil {
 			return fmt.Errorf("audioManager.LoadAll: failed to read sound file: %v", err)
 		}
@@ -71,41 +68,41 @@ func (m *audioManager) LoadAll() error {
 		var src io.ReadSeeker
 		switch extension {
 		case ".ogg":
-			stream, err := vorbis.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
+			stream, err := vorbis.DecodeWithSampleRate(m.sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode ogg: %v", err)
 			}
 			src = stream
 		case ".wav":
-			stream, err := wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
+			stream, err := wav.DecodeWithSampleRate(m.sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode wav: %v", err)
 			}
 			src = stream
 		case ".mp3":
-			stream, err := mp3.DecodeWithSampleRate(sampleRate, bytes.NewReader(rawFile))
+			stream, err := mp3.DecodeWithSampleRate(m.sampleRate, bytes.NewReader(rawFile))
 			if err != nil {
 				return fmt.Errorf("audioManager.LoadAll: failed to decode mp3: %v", err)
 			}
 			src = stream
 		}
 
-		audioPlayer, err := audio.NewPlayer(audio.NewContext(sampleRate), src)
+		audioPlayer, err := audio.NewPlayer(audio.NewContext(m.sampleRate), src)
 		if err != nil {
 			return fmt.Errorf("audioManager.LoadAll: failed to create a new audio player: %v", err)
 		}
 
 		m.audioPlayers[name] = audioPlayer
 	}
-
 	return nil
 }
 
-func (m *audioManager) CloseAll() error {
-	for _, p := range m.audioPlayers {
+func (m *audioManager) Close() error {
+	for key, p := range m.audioPlayers {
 		if err := p.Close(); err != nil {
 			return fmt.Errorf("audioManager.CloseAll: failed to close an audio player: %v", err)
 		}
+		delete(m.audioPlayers, key)
 	}
 	return nil
 }
