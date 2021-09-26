@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	cpuProfile  = flag.String("cpuprofile", "", "write cpu profile to file")
 	memProfile  = flag.String("memprofile", "", "write memory profile to file")
 	traceOut    = flag.String("trace", "", "write trace to file")
 	transparent = flag.Bool("transparent", false, "background transparency")
@@ -55,9 +56,27 @@ func main() {
 
 	const scale = 2
 	ebiten.SetWindowSize(rosengo.ScreenWidth*scale, rosengo.ScreenHeight*scale)
+	ebiten.SetWindowTitle("ROSENGO")
 	ebiten.SetWindowResizable(true)
 	if err := ebiten.RunGame(game); err != nil {
 		panic(err)
+	}
+
+	if *cpuProfile != "" {
+		f, err := os.Create(*cpuProfile)
+		if err != nil {
+			panic(err)
+		}
+		defer func() {
+			pprof.StopCPUProfile()
+			if err := f.Close(); err != nil {
+				panic(err)
+			}
+		}()
+
+		if err := pprof.StartCPUProfile(f); err != nil {
+			panic(fmt.Sprintf("could not start cpu profile: %s", err))
+		}
 	}
 
 	if *memProfile != "" {

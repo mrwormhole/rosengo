@@ -1,7 +1,8 @@
 package rosengo
 
 import (
-	"flag"
+	"fmt"
+	"github.com/MrWormHole/rosengo/rosengo/manager"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -10,21 +11,42 @@ const (
 	ScreenHeight = 640
 )
 
-var (
-	cpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
-)
-
 type Game struct {
-	transparent bool
-	mute        bool
-	scene       *Scene
+	transparent   bool
+	mute          bool
+	activeScene   *Scene
+	allScenes     []*Scene
+	audioManager  manager.AudioManager
+	spriteManager manager.SpriteManager
 }
 
 func NewGame() (*Game, error) {
+	audioManager, err := manager.NewAudioManager(48000)
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	err = audioManager.Load("assets/sounds")
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	// Note: audio players should be closed before they are played????
+
+	spriteManager, err := manager.NewSpriteManager()
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	err = spriteManager.Load("assets/images")
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+
 	return &Game{
-		transparent: false,
-		mute:        false,
-		scene:       nil,
+		transparent:   false,
+		mute:          false,
+		activeScene:   nil, // TODO: decide on this
+		allScenes:     nil, // TODO: decide on this
+		audioManager:  audioManager,
+		spriteManager: spriteManager,
 	}, nil
 }
 

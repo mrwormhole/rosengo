@@ -35,7 +35,6 @@ type audioManager struct {
 
 func NewAudioManager(sampleRate int) (AudioManager, error) {
 	players := make(map[string]*audio.Player)
-	sampleRate = 48000 // TODO change this in the future
 	return &audioManager{
 		audioPlayers: players,
 		sampleRate:   sampleRate,
