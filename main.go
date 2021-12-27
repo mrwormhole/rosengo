@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/MrWormHole/rosengo/rosengo"
-	"github.com/hajimehoshi/ebiten/v2"
+	_ "image/png"
 	"os"
 	"runtime/pprof"
 	"runtime/trace"
+
+	"github.com/MrWormHole/rosengo/rosengo"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
@@ -54,7 +56,7 @@ func main() {
 		game.SetMute(true)
 	}
 
-	const scale = 2
+	const scale = 1
 	ebiten.SetWindowSize(rosengo.ScreenWidth*scale, rosengo.ScreenHeight*scale)
 	ebiten.SetWindowTitle("ROSENGO")
 	ebiten.SetWindowResizable(true)

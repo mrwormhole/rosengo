@@ -17,7 +17,7 @@ import (
 )
 
 type AudioManager interface {
-	Load(dir string) error
+	LoadAll(dir string) error
 	Close() error
 	IsPlaying(audio string) bool
 	SetVolume(audio string, volume float64) error
@@ -29,20 +29,21 @@ type AudioManager interface {
 
 type audioManager struct {
 	audioPlayers map[string]*audio.Player
+	audioContext *audio.Context
 	sampleRate   int
 	isMuted      bool
 }
 
 func NewAudioManager(sampleRate int) (AudioManager, error) {
-	players := make(map[string]*audio.Player)
 	return &audioManager{
-		audioPlayers: players,
+		audioPlayers: make(map[string]*audio.Player),
+		audioContext: audio.NewContext(sampleRate),
 		sampleRate:   sampleRate,
 		isMuted:      false,
 	}, nil
 }
 
-func (m *audioManager) Load(dir string) error {
+func (m *audioManager) LoadAll(dir string) error {
 	if strings.TrimSpace(dir) == "" {
 		return errors.New("audioManager.Load: directory name can not be blank")
 	}
@@ -86,7 +87,7 @@ func (m *audioManager) Load(dir string) error {
 			src = stream
 		}
 
-		audioPlayer, err := audio.NewPlayer(audio.NewContext(m.sampleRate), src)
+		audioPlayer, err := m.audioContext.NewPlayer(src)
 		if err != nil {
 			return fmt.Errorf("audioManager.LoadAll: failed to create a new audio player: %v", err)
 		}

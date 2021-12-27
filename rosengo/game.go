@@ -25,7 +25,7 @@ func NewGame() (*Game, error) {
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-	err = audioManager.Load("assets/sounds")
+	err = audioManager.LoadAll("sounds")
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
@@ -35,7 +35,7 @@ func NewGame() (*Game, error) {
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-	err = spriteManager.Load("assets/images")
+	err = spriteManager.LoadAll("images")
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}

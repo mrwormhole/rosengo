@@ -1,17 +1,16 @@
 package mobile
 
 import (
+	"github.com/MrWormHole/rosengo/rosengo"
 	"github.com/hajimehoshi/ebiten/v2/mobile"
-
-	"github.com/hajimehoshi/go-inovation/ino"
 )
 
 func init() {
-	inogame, err := ino.NewGame()
+	rosengo, err := rosengo.NewGame()
 	if err != nil {
 		panic(err)
 	}
-	mobile.SetGame(inogame)
+	mobile.SetGame(rosengo)
 }
 
 // Dummy is a dummy exported function.

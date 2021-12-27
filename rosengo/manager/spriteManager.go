@@ -14,7 +14,7 @@ import (
 )
 
 type SpriteManager interface {
-	Load(dir string) error
+	LoadAll(dir string) error
 }
 
 type spriteManager struct {
@@ -28,7 +28,7 @@ func NewSpriteManager() (SpriteManager, error) {
 	}, nil
 }
 
-func (m *spriteManager) Load(dir string) error {
+func (m *spriteManager) LoadAll(dir string) error {
 	if strings.TrimSpace(dir) == "" {
 		return errors.New("spriteManager.Load: directory name can not be blank")
 	}
