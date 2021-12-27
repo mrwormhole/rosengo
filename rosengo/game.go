@@ -2,7 +2,6 @@ package rosengo
 
 import (
 	"fmt"
-
 	"github.com/MrWormHole/rosengo/rosengo/manager"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -15,10 +14,10 @@ const (
 type Game struct {
 	transparent   bool
 	mute          bool
-	activeScene   *Scene
-	allScenes     []*Scene
-	audioManager  manager.AudioManager
-	spriteManager manager.SpriteManager
+	activeScene   Scene
+	allScenes     []Scene
+	audioManager  *manager.AudioManager
+	spriteManager *manager.SpriteManager
 }
 
 func NewGame() (*Game, error) {
@@ -42,11 +41,25 @@ func NewGame() (*Game, error) {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
 
+	// --------------------------------- TESTING AREA ---------------------------------
+	dummyImage, err := spriteManager.GetImage("0")
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	w, h := dummyImage.Size()
+	dummyGameObject, err := NewGameObject(dummyImage, ScreenWidth/2-w/2, ScreenHeight/2-h/2)
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	s := NewScene("introduction", []*GameObject{dummyGameObject}, Starting)
+	scenes := []Scene{s}
+	// --------------------------------- TESTING AREA ---------------------------------
+
 	return &Game{
 		transparent:   false,
 		mute:          false,
-		activeScene:   nil, // TODO: decide on this
-		allScenes:     nil, // TODO: decide on this
+		activeScene:   scenes[0],
+		allScenes:     scenes,
 		audioManager:  audioManager,
 		spriteManager: spriteManager,
 	}, nil
@@ -72,5 +85,5 @@ func (g *Game) Update() error {
 
 // Draw is implemented to draw for Ebiten interface
 func (g *Game) Draw(screen *ebiten.Image) {
-
+	g.activeScene.Draw(screen)
 }

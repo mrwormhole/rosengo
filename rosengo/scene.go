@@ -4,19 +4,19 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 type Scene interface {
 	Name() string
-	GameObjects() []GameObject
+	GameObjects() []*GameObject
 	GameState() GameState
 	Update() error
-	Draw(screen *ebiten.Image) error
+	Draw(screen *ebiten.Image)
 }
 
 type scene struct {
 	name    string
-	objects []GameObject
+	objects []*GameObject
 	state   GameState
 }
 
-func NewScene(name string, objects []GameObject, state GameState) Scene {
+func NewScene(name string, objects []*GameObject, state GameState) Scene {
 	return &scene{
 		name:    name,
 		objects: objects,
@@ -28,7 +28,7 @@ func (s *scene) Name() string {
 	return s.name
 }
 
-func (s *scene) GameObjects() []GameObject {
+func (s *scene) GameObjects() []*GameObject {
 	return s.objects
 }
 
@@ -40,6 +40,10 @@ func (s *scene) Update() error {
 	return nil
 }
 
-func (s *scene) Draw(screen *ebiten.Image) error {
-	return nil
+func (s *scene) Draw(screen *ebiten.Image) {
+	for _, obj := range s.objects {
+		if obj.IsActive {
+			screen.DrawImage(obj.Img, obj.Opts)
+		}
+	}
 }
