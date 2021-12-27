@@ -2,6 +2,7 @@ package rosengo
 
 import (
 	"fmt"
+
 	"github.com/MrWormHole/rosengo/rosengo/manager"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -21,7 +22,8 @@ type Game struct {
 }
 
 func NewGame() (*Game, error) {
-	audioManager, err := manager.NewAudioManager(48000)
+	sampleRate := 48000
+	audioManager, err := manager.NewAudioManager(sampleRate)
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
@@ -58,7 +60,7 @@ func (g *Game) SetMute(value bool) {
 	g.mute = value
 }
 
-// Layout is implented to obtain frame for Ebiten interface
+// Layout is implemented to obtain frame for Ebiten interface
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return ScreenWidth, ScreenHeight
 }
@@ -70,5 +72,5 @@ func (g *Game) Update() error {
 
 // Draw is implemented to draw for Ebiten interface
 func (g *Game) Draw(screen *ebiten.Image) {
-	return
+
 }
