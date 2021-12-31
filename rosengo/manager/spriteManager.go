@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	_ "image/png"
 	"path"
 	"path/filepath"
 	"strings"

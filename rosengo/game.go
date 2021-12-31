@@ -3,6 +3,7 @@ package rosengo
 import (
 	"fmt"
 	"github.com/MrWormHole/rosengo/rosengo/manager"
+	"github.com/MrWormHole/rosengo/rosengo/shaders"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -42,17 +43,43 @@ func NewGame() (*Game, error) {
 	}
 
 	// --------------------------------- TESTING AREA ---------------------------------
-	dummyImage, err := spriteManager.GetImage("0")
+	// IMAGE TEST
+	dummyImage, err := spriteManager.GetImage("4")
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
 	w, h := dummyImage.Size()
+
+	noiseImage, err := spriteManager.GetImage("noise128x128")
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	// IMAGE TEST
+
+	// GAMEOBJECT TEST
 	dummyGameObject, err := NewGameObject(dummyImage, ScreenWidth/2-w/2, ScreenHeight/2-h/2)
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-	s := NewScene("introduction", []*GameObject{dummyGameObject}, Starting)
+	// GAMEOBJECT TEST
+
+	dummyGameObject2, err := NewGameObject(dummyImage, 0, 0)
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+
+	// SHADER TEST
+	dissolveShader, err := ebiten.NewShader(shaders.Dissolve_go)
+	if err != nil {
+		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	}
+	dummyGameObject.SetShader(dissolveShader, [4]*ebiten.Image{dummyImage, nil, nil, noiseImage})
+	// SHADER TEST
+
+	// SCENE TEST
+	s := NewScene("introduction", []*GameObject{dummyGameObject, dummyGameObject2}, Starting)
 	scenes := []Scene{s}
+	// SCENE TEST
 	// --------------------------------- TESTING AREA ---------------------------------
 
 	return &Game{
@@ -80,7 +107,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update is implemented to update for Ebiten interface
 func (g *Game) Update() error {
-	return nil
+	return g.activeScene.Update()
 }
 
 // Draw is implemented to draw for Ebiten interface

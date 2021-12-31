@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	_ "image/png"
 	"os"
 	"runtime/pprof"
 	"runtime/trace"

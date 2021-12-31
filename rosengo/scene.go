@@ -12,6 +12,7 @@ type Scene interface {
 
 type scene struct {
 	name    string
+	ticks   int
 	objects []*GameObject
 	state   GameState
 }
@@ -37,13 +38,19 @@ func (s *scene) GameState() GameState {
 }
 
 func (s *scene) Update() error {
+	s.ticks++
 	return nil
 }
 
 func (s *scene) Draw(screen *ebiten.Image) {
 	for _, obj := range s.objects {
+		if obj.ShaderEnabled {
+			obj.SetShaderUniforms(map[string]interface{}{
+				"Time": float32(s.ticks) / 60,
+			})
+		}
 		if obj.IsActive {
-			screen.DrawImage(obj.Img, obj.Opts)
+			obj.Draw(screen)
 		}
 	}
 }
