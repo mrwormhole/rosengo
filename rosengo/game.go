@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	ScreenWidth  = 480
-	ScreenHeight = 640
+	ScreenWidth  = 640 //640
+	ScreenHeight = 480 //480
 )
 
 type Game struct {
@@ -44,40 +44,35 @@ func NewGame() (*Game, error) {
 
 	// --------------------------------- TESTING AREA ---------------------------------
 	// IMAGE TEST
-	dummyImage, err := spriteManager.GetImage("4")
+	dummyImage, err := spriteManager.GetImage("milky-way640x480")
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
 	w, h := dummyImage.Size()
-
-	noiseImage, err := spriteManager.GetImage("noise128x128")
-	if err != nil {
-		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
-	}
+	fmt.Println("Image size:", w, h)
 	// IMAGE TEST
-
 	// GAMEOBJECT TEST
-	dummyGameObject, err := NewGameObject(dummyImage, ScreenWidth/2-w/2, ScreenHeight/2-h/2)
+	dummyGameObject, err := NewGameObject(dummyImage, 0, 0)
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-	// GAMEOBJECT TEST
 
-	dummyGameObject2, err := NewGameObject(dummyImage, 0, 0)
-	if err != nil {
-		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
-	}
+	// GAMEOBJECT TEST
 
 	// SHADER TEST
-	dissolveShader, err := ebiten.NewShader(shaders.Dissolve_go)
+	blackholeShader, err := ebiten.NewShader(shaders.Blackhole_go)
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-	dummyGameObject.SetShader(dissolveShader, [4]*ebiten.Image{dummyImage, nil, nil, noiseImage})
+	//dissolveShader, err := ebiten.NewShader(shaders.Dissolve_go)
+	//if err != nil {
+	//	return nil, fmt.Errorf("rosengo.NewGame: %v", err)
+	//}
+	dummyGameObject.SetShader(blackholeShader, [4]*ebiten.Image{dummyImage, nil, nil, nil})
 	// SHADER TEST
 
 	// SCENE TEST
-	s := NewScene("introduction", []*GameObject{dummyGameObject, dummyGameObject2}, Starting)
+	s := NewScene("introduction", []*GameObject{dummyGameObject}, Starting)
 	scenes := []Scene{s}
 	// SCENE TEST
 	// --------------------------------- TESTING AREA ---------------------------------

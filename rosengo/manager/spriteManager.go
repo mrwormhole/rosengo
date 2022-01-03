@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	_ "image/jpeg"
 	_ "image/png"
 	"path"
 	"path/filepath"
@@ -38,7 +39,7 @@ func (m *SpriteManager) LoadAll(dir string) error {
 	for i := range images {
 		name := images[i].Name()
 		extension := filepath.Ext(name)
-		if extension != ".png" {
+		if extension != ".png" && extension != ".jpg" {
 			continue
 		}
 

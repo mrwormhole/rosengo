@@ -1,6 +1,9 @@
 package rosengo
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"log"
+)
 
 type Scene interface {
 	Name() string
@@ -45,8 +48,19 @@ func (s *scene) Update() error {
 func (s *scene) Draw(screen *ebiten.Image) {
 	for _, obj := range s.objects {
 		if obj.ShaderEnabled {
+			cx, cy := ebiten.CursorPosition()
+			w, h := screen.Size()
+			log.Println(cx, cy, w, h)
 			obj.SetShaderUniforms(map[string]interface{}{
 				"Time": float32(s.ticks) / 60,
+				"ScreenSize": []float32{
+					float32(w),
+					float32(h),
+				},
+				"Cursor": []float32{
+					float32(cx),
+					float32(cy),
+				},
 			})
 		}
 		if obj.IsActive {
