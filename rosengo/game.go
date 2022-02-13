@@ -3,13 +3,20 @@ package rosengo
 import (
 	"fmt"
 	"github.com/MrWormHole/rosengo/rosengo/manager"
-	"github.com/MrWormHole/rosengo/rosengo/shaders"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"image"
+	"image/color"
 )
 
 const (
-	ScreenWidth  = 640 //640
-	ScreenHeight = 480 //480
+	ScreenWidth  = 900
+	ScreenHeight = 1600
+)
+
+var (
+	OutsideWidth  int
+	OutsideHeight int
 )
 
 type Game struct {
@@ -44,32 +51,36 @@ func NewGame() (*Game, error) {
 
 	// --------------------------------- TESTING AREA ---------------------------------
 	// IMAGE TEST
-	dummyImage, err := spriteManager.GetImage("milky-way640x480")
+	/*dummyImage, err := spriteManager.GetImage("milky-way640x480")
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
 	w, h := dummyImage.Size()
-	fmt.Println("Image size:", w, h)
+	fmt.Println("Image size:", w, h)*/
+
+	r := 500
+	offset := 5
+	test := ebiten.NewImage(r, r)
+	test.Fill(color.White)
+	sub := test.SubImage(image.Rect(offset, offset, r-offset, r-offset)).(*ebiten.Image)
+	sub.Fill(color.Black)
+	ebitenutil.DebugPrint(test, " test")
+
+	test2 := ebiten.NewImage(411, 411)
+	test2.Fill(color.RGBA{
+		R: 255,
+		G: 0,
+		B: 0,
+		A: 255,
+	})
+
 	// IMAGE TEST
 	// GAMEOBJECT TEST
-	dummyGameObject, err := NewGameObject(dummyImage, 0, 0)
+	dummyGameObject, err := NewGameObject(test2, ScreenWidth/2-411/2, ScreenHeight/2-411/2)
 	if err != nil {
 		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
 	}
-
 	// GAMEOBJECT TEST
-
-	// SHADER TEST
-	blackholeShader, err := ebiten.NewShader(shaders.Blackhole_go)
-	if err != nil {
-		return nil, fmt.Errorf("rosengo.NewGame: %v", err)
-	}
-	//dissolveShader, err := ebiten.NewShader(shaders.Dissolve_go)
-	//if err != nil {
-	//	return nil, fmt.Errorf("rosengo.NewGame: %v", err)
-	//}
-	dummyGameObject.SetShader(blackholeShader, [4]*ebiten.Image{dummyImage, nil, nil, nil})
-	// SHADER TEST
 
 	// SCENE TEST
 	s := NewScene("introduction", []*GameObject{dummyGameObject}, Starting)
@@ -97,11 +108,21 @@ func (g *Game) SetMute(value bool) {
 
 // Layout is implemented to obtain frame for Ebiten interface
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	OutsideWidth = outsideWidth
+	OutsideHeight = outsideHeight
+
 	return ScreenWidth, ScreenHeight
 }
 
 // Update is implemented to update for Ebiten interface
 func (g *Game) Update() error {
+	fmt.Println("SUPERNOVA: ", OutsideWidth, OutsideHeight)
+	touchIDs := ebiten.TouchIDs()
+	for _, id := range touchIDs {
+		touchX, touchY := ebiten.TouchPosition(id)
+		fmt.Println("TOUCH ID: ", id, " touchX:", touchX, " touchY:", touchY)
+	}
+
 	return g.activeScene.Update()
 }
 
