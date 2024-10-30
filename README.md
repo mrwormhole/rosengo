@@ -28,3 +28,5 @@ go run github.com/hajimehoshi/ebiten/v2/cmd/ebitenmobile bind -target android -j
 ```
 
 and run the Android Studio project in `./mobile/android`
+
+![preview](https://github.com/mrwormhole/rosengo/blob/master/dissolve-shader.gif)
